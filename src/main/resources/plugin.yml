@@ -1,0 +1,5 @@
+name: PandoraTotems
+version: ${project.version}
+main: dev.minecraftplugin.pandoratotems.PandoraTotems
+authors: [ X1XX ]
+description: A totems plugin.
