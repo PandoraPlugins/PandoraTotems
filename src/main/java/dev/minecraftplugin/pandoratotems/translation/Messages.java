@@ -1,23 +1,20 @@
 package dev.minecraftplugin.pandoratotems.translation;
 
-public enum Messages {
-    PREFIX("&aTotems> ", "prefix"),
-    NO_PERMISSION("&cYou do not have permission to use this command!", "no_permission");
+import com.google.gson.annotations.SerializedName;
 
+public enum Messages {
+    @SerializedName("No Permission")
+    NO_PERMISSION("&cYou do not have permission to use this command!"),
+    @SerializedName("Prefix")
+    PREFIX("&aTotems>");
 
     private final String message;
-    private final String key;
+
+    Messages(String message) {
+        this.message = message;
+    }
 
     public String getMessage() {
         return message;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    Messages(String message, String key) {
-        this.message = message;
-        this.key = key;
     }
 }

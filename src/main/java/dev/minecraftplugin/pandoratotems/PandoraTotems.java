@@ -1,38 +1,59 @@
 package dev.minecraftplugin.pandoratotems;
 
-import com.azortis.azortislib.experimental.translation.Translation;
-import com.azortis.azortislib.experimental.translation.TranslationManager;
-import com.azortis.azortislib.experimental.translation.impl.YAMLTranslation;
+import com.azortis.azortislib.configuration.ConfigManager;
 import dev.minecraftplugin.pandoratotems.totems.TotemManager;
+import dev.minecraftplugin.pandoratotems.translation.Messages;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+
 public final class PandoraTotems extends JavaPlugin {
-    private Translation translation;
-    private TotemManager manager;
+    private TotemManager totemManager;
 
-    public Translation getTranslation() {
-        return translation;
-    }
-
-    public TotemManager getManager() {
-        return manager;
+    public TotemManager getTotemManager() {
+        return totemManager;
     }
 
     @Override
     public void onEnable() {
         // Plugin startup logic
-
-        // Load in messages/translated messages.
-        translation = TranslationManager.loadTranslation("messages", new YAMLTranslation(), this);
-        manager = new TotemManager(this);
-
+        ConfigManager manager = new ConfigManager(this);
+        initMessages(manager);
+        this.totemManager = new TotemManager(this);
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+    }
 
-        // Saves any changes to our translation messages.
-        translation.save();
+    private void initMessages(ConfigManager manager) {
+        File f = new File(getDataFolder(), "messages.json");
+
+        try {
+            if (!getDataFolder().exists()) {
+                getDataFolder().mkdirs();
+            }
+
+            if (!f.exists()) {
+                f.mkdirs();
+                f.createNewFile();
+
+                try {
+                    String json = manager.getGson().toJson(Messages.class);
+                    Files.write(f.toPath(), json.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                } catch (IOException var2) {
+                    var2.printStackTrace();
+                }
+
+            } else {
+                manager.getGson().fromJson(new FileReader(f), Messages.class);
+            }
+        } catch (IOException var6) {
+            var6.printStackTrace();
+        }
     }
 }
